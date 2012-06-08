@@ -46,15 +46,101 @@ class SuckList
     @items = items
   end
 
-  def emit(klass, method, args)
+  def emit(klass, method, params)
   end
 end
 
-class FunCall < SuckList  
-  def emit(klass, method, args = [])
-    @items.each do |item|
-      item.emit(klass, method, args)
+class FunCall < SuckList
+  def op_add(klass, method, args)
+    i = 0
+    retval = 0
+
+    @params.each do |param|
+      i += 1
+
+      case param
+      when Identifier
+        retval = method.iload args.index(param.name)
+      else
+        retval = param.emit(klass, method, args)
+      end
+
+      method.iadd if i > 1
     end
+
+    retval
+  end
+
+  def op_defun(klass, method, args)
+    java_args = []
+    args = @params[1].items.map {|item| 
+      java_args << klass.int
+      item.name 
+    }
+
+    klass.public_static_method @params[0].name, [], klass.int, *java_args do |method|
+      @params[1..-1].each do |item|
+       item.emit(klass, method, args)
+      end
+
+      method.ireturn
+    end
+  end
+
+  def op_println(klass, method, args)
+    retval = nil
+
+    @params.each do |param|
+      method.getstatic System, :out, PrintStream
+      retval = param.emit(klass, method, args)
+
+      type = case retval
+             when Fixnum
+               method.int
+             else
+               method.object
+             end
+      
+      method.invokevirtual PrintStream, "print", [method.void, type]
+    end
+    
+    method.getstatic System, :out, PrintStream
+    method.invokevirtual PrintStream, "println", [method.void]
+    retval
+  end
+
+  def op_funcall(klass, method, args) 
+    java_params = [klass.int]
+
+    @params.each do |param|
+      method.ldc param
+      java_params << klass.int
+    end
+
+    method.invokestatic klass, @name, java_params
+  end
+
+  def emit(klass, method, args = [])
+    result = nil
+
+    case @name
+    when 'defun'
+      result = op_defun(klass, method, args)
+    when '+'
+      result = op_add(klass, method, args)
+    when 'println'
+      result = op_println(klass, method, args)
+    else
+      result = op_funcall(klass, method, args)
+    end
+
+    result
+  end
+
+  def initialize(items)
+    super(items)
+    @name = items[0].name
+    @params = items[1..-1]
   end
 end
 
@@ -89,7 +175,7 @@ end
 
 def compile(ast, class_name)
   fb = FileBuilder.build(__FILE__) do
-    public_class class_name do 
+    public_class class_name do
       public_static_method "main", [], void, string[] do |main|
         ast.each do |statement| 
           statement.emit(this, main)
@@ -99,7 +185,7 @@ def compile(ast, class_name)
       end
     end
   end
-  
+
   fb.generate do |filename, class_builder|
     File.open(filename, 'w') do |file|
       file.write(class_builder.generate)
