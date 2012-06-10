@@ -26,7 +26,7 @@ class Parser < Parslet::Parser
 end
 
 # abstract
-class SuckList
+class TerribleList
   attr_accessor :items
 
   def initialize(items)
@@ -34,10 +34,10 @@ class SuckList
   end
 end
 
-class FunCall < SuckList
+class FunCall < TerribleList
 end
 
-class ArgList < SuckList
+class ArgList < TerribleList
 end
 
 class Identifier

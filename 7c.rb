@@ -39,7 +39,7 @@ class Transform < Parslet::Transform
   rule(:vector => sequence(:vector))       { ArgList.new(vector) }
 end
 
-class SuckList
+class TerribleList
   attr_accessor :items
 
   def initialize(items)
@@ -50,7 +50,7 @@ class SuckList
   end
 end
 
-class FunCall < SuckList  
+class FunCall < TerribleList  
   def emit(klass, method, args = [])
     @items.each do |item|
       item.emit(klass, method, args)
@@ -58,7 +58,7 @@ class FunCall < SuckList
   end
 end
 
-class ArgList < SuckList
+class ArgList < TerribleList
 end
 
 class Identifier

@@ -7,7 +7,7 @@ import java.io.PrintStream
 include BiteScript
 
 fb = FileBuilder.build(__FILE__) do
-  public_class "Eight" do
+  public_class "Seven" do
     public_static_method "foo", [], int, int, int do
       iload 0
       iload 1
