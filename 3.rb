@@ -21,5 +21,6 @@ class Parser < Parslet::Parser
 end
 
 parser = Parser.new
-pp parser.parse(File.open(ARGV[0]))
-
+source_file = File.open(ARGV[0])
+pp parser.parse(source_file.read())
+source_file.close()

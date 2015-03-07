@@ -194,7 +194,9 @@ def compile(ast, class_name)
 end
 
 parser = Parser.new
-expression_tree = parser.parse(File.open(ARGV[0]))
+source_file = File.open(ARGV[0])
+expression_tree = parser.parse(source_file.read())
+source_file.close()
 ast = Transform.new.apply(expression_tree)
 
 file_name = ARGV[0]
