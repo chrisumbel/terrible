@@ -51,6 +51,23 @@ class TerribleList
 end
 
 class FunCall < TerribleList
+  def emit(klass, method, args = [])
+    result = nil
+
+    case @name
+    when 'defun'
+      result = op_defun(klass, method, args)
+    when '+'
+      result = op_add(klass, method, args)
+    when 'println'
+      result = op_println(klass, method, args)
+    else
+      result = op_funcall(klass, method, args)
+    end
+
+    result
+  end
+
   def op_add(klass, method, args)
     i = 0
     retval = 0
@@ -118,23 +135,6 @@ class FunCall < TerribleList
     end
 
     method.invokestatic klass, @name, java_params
-  end
-
-  def emit(klass, method, args = [])
-    result = nil
-
-    case @name
-    when 'defun'
-      result = op_defun(klass, method, args)
-    when '+'
-      result = op_add(klass, method, args)
-    when 'println'
-      result = op_println(klass, method, args)
-    else
-      result = op_funcall(klass, method, args)
-    end
-
-    result
   end
 
   def initialize(items)

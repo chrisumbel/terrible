@@ -1,4 +1,3 @@
-
 require 'rubygems'
 require 'bitescript'
 import java.lang.System
@@ -21,12 +20,13 @@ fb = FileBuilder.build(__FILE__) do
       invokevirtual PrintStream, "print", [void, string]
 
       getstatic System, :out, PrintStream
-
       ldc 6
       ldc 9
       invokestatic this, "foo", [int, int, int]
+      invokevirtual PrintStream, "print", [void, int]
 
-      invokevirtual PrintStream, "println", [void, int]
+      getstatic System, :out, PrintStream
+      invokevirtual PrintStream, "println", [void]
       returnvoid
     end
   end

@@ -4,7 +4,7 @@ public class Test {
 		return x + y;
     }
 
-    public static void main(String[] argv) {
+     public static void main(String[] argv) {
 		System.out.print("result is ");
 		System.out.print(foo(6, 9));
 		System.out.println();
