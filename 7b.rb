@@ -17,6 +17,10 @@ fb = FileBuilder.build(__FILE__) do
 
     public_static_method "main", [], void, string[] do
       getstatic System, :out, PrintStream
+      ldc "result is "
+      invokevirtual PrintStream, "print", [void, string]
+
+      getstatic System, :out, PrintStream
 
       ldc 6
       ldc 9
